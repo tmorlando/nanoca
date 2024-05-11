@@ -1,0 +1,23 @@
+[project]
+name = "nanoCA"
+version = "1.0.0"
+authors = [
+  { name="Tero Mononen", email="tmo+nanoca@iki.fi" },
+]
+description = "Nano CA with Secret Sharing"
+readme = "README.md"
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://www.ssh.com/"
+"Bug Tracker" = "https://support.ssh.com"
+
+[build-system]
+requires = [
+           "setuptools", "click"
+]

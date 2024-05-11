@@ -1,0 +1,6 @@
+VERSION=$(git rev-parse --short HEAD)
+
+fpm --output-type deb --input-type python --python-pypi file://`pwd`/dist \
+    --prefix /usr/sbin --name nanoca --version $VERSION \
+    --description 'Rather minimalistic Certificate Authority' \
+    --package nanoCA-2.2.6.deb nanoCA-1.0.0

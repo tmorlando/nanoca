@@ -1,0 +1,9 @@
+LICENSE
+README.md
+pyproject.toml
+src/nanoCA/__main__.py
+src/nanoCA/ca.py
+src/nanoCA.egg-info/PKG-INFO
+src/nanoCA.egg-info/SOURCES.txt
+src/nanoCA.egg-info/dependency_links.txt
+src/nanoCA.egg-info/top_level.txt
