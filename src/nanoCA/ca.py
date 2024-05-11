@@ -19,7 +19,7 @@ version = "1.0.0"
 
 provider_args = [] if os.getenv("NO_FIPS") else ["--provider", "fips"]
 
-basepath = os.path.expanduser("~/.nqx-issuer")
+basepath = os.path.expanduser("~/.nanoca")
 certs = "{basepath}/certificates"  # Issued certs and reqs by CA
 crls = "{basepath}/crls"  # Revocation reasons and CRLs
 keys = "{basepath}/keys"  # CA keys and certs
@@ -231,7 +231,7 @@ class Global:
 @click.pass_context
 def toplevel(ctx, *, basepath, verbose, version, dry_run):
     if version:
-        print("SSH NQC Certificate Hierarchy Tool")
+        print("Certificate Hierarchy Tool")
         print("Version: ", version)
         os.exit(0)
     ctx.obj = Global(basepath, verbose, dry_run)
@@ -244,7 +244,7 @@ def cmd_init(obj):
         os.makedirs(certs.format(basepath=obj.basepath), mode=0o750, exist_ok=False)
         os.makedirs(crls.format(basepath=obj.basepath), mode=0o750, exist_ok=False)
         os.makedirs(keys.format(basepath=obj.basepath), mode=0o700, exist_ok=False)
-        logging.info("Initialized NQX CA to: %r", str(obj.basepath))
+        logging.info("Initialized CA to: %r", str(obj.basepath))
     except OSError:
         logging.error("Already initialized to: %r", str(obj.basepath))
 
@@ -468,7 +468,7 @@ def issue():
               help="Number of key shares require to use issuer's private key.",
               type=int, default=0)  # issuer is protected using secret sharing with this threshold
 @click.option('--subject',
-              help="Subject name for the issued certificate. /DC=COM/DC=SSH/CN=NQX.",
+              help="Subject name for the issued certificate. /DC=IKI/DC=FI/CN=TMO",
               type=str)
 @click.option('--altname',
               help="Subject altName {DNS,IP,EMAIL,UPN}=value.",
@@ -551,7 +551,7 @@ def cmd_issue(obj: Global, *,
 
     assert isinstance(secret, bytes)
 
-    with tempfile.TemporaryDirectory(dir="/tmp/", prefix="nqx-issuer") as dirpath:
+    with tempfile.TemporaryDirectory(dir="/tmp/", prefix="nanoca") as dirpath:
         extpath = f"{dirpath}/extensions.cnf"
         issue_cmd.extend([
             "-extfile", extpath,
@@ -668,7 +668,7 @@ def do_build_crl(ctx: Global, caname: str, crlname: str, *,
 
     assert isinstance(secret, bytes)
 
-    with tempfile.TemporaryDirectory(dir="/tmp/", prefix="nqx-issuer") as dirpath:
+    with tempfile.TemporaryDirectory(dir="/tmp/", prefix="nanoca") as dirpath:
         crlpath = f"{dirpath}/gencrl.cnf"
         crllines = [
             f"[ {caname} ]",

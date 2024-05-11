@@ -14,8 +14,7 @@ classifiers = [
 ]
 
 [project.urls]
-"Homepage" = "https://www.ssh.com/"
-"Bug Tracker" = "https://support.ssh.com"
+"Homepage" = "https://github.com/tmorlando/nanoca/"
 
 [build-system]
 requires = [

@@ -40,10 +40,10 @@ After Issuing the CA certificate we'll create a CRL that can be published.
 ~~~
 $ CA keygen --shares 2 20 root-ca
 $ CA issue \
-   --subject /DC=SSH/DC=NET/CN=root-ca \
-   --altname DNS=root-ca.ssh.net --altname EMAIL=root@root-ca.ssh.net \
+   --subject /DC=IKI/DC=FI/DC=TMO/CN=root-ca \
+   --altname DNS=root-ca.tmo.iki.fi --altname EMAIL=root@root-ca.tmo.iki.fi \
    --usage TOP --name root-ca \
-   root-ca /tmp/nqx/certificates/root-ca.csr /tmp/root-ca.crt
+   root-ca /tmp/test/certificates/root-ca.csr /tmp/root-ca.crt
 $ CA crl
    --shares 2 --validity 182
    root-ca /tmp/crl-top-without-revoked-certs.crl
@@ -60,10 +60,10 @@ As the Root CA uses secret sharing, we'll need to provide number of secrets it u
 $ CA keygen --keytype ED448 --name sub-ca
 $ CA issue
    --shares 2
-   --subject /DC=SSH/DC=NET/CN=sub-ca/
-   --altname DNS=sub-ca.ssh.net --altname EMAIL=root@sub-ca.ssh.net
+   --subject /DC=IKI/DC=FI/DC=TMO/CN=sub-ca \
+   --altname DNS=sub-ca.tmo.iki.fi --altname EMAIL=root@sub-ca.tmo.iki.fi \
    --usage INTERMEDIATE --name sub-ca
-   root-ca /tmp/nqx/certificates/sub-ca.csr /tmp/sub-ca.crt
+   root-ca /tmp/test/certificates/sub-ca.csr /tmp/sub-ca.crt
 $ CA crl
    --validity 91
    sub-ca /tmp/crl-sub-without-revoked-certs.crl
@@ -77,8 +77,8 @@ First create key pair and CSR on some device, then transmit the req.pem to the C
 $ openssl req -new -subj '/CN=Node 1/' -noenc -out leaf.pem
 
 $ CA issue
-   --subject /DC=devices/DC=SSH/DC=NET/CN=Leaf Device One/
-   --altname DNS=leaf1.devices.ssh.net --altname EMAIL=support@devices.ssh.net --altname IP=1.2.3.4
+   --subject '/DC=IKI/DC=FI/DC=TMO/CN=Leaf Device One' \
+   --altname DNS=leaf1.devices.tmo.iki.fi --altname EMAIL=support@devices.tmo.iki.fi --altname IP=1.2.3.4
    sub-ca
    /tmp/leaf.pem /tmp/leaf.crt
 ~~~
@@ -96,7 +96,7 @@ Revoke leaf certificate issued above. This can be done either using the CA store
 ~~~
 $ CA list --type cert 'Leaf Device One'
 Status Serial     Path                                      Subject
-V      123123     afcc77c8-2d2b-4957-8306-0c0ae571ff13.crt  /DC=devices/DC=SSH/DC=NET/CN=Leaf Device One/
+V      123123     afcc77c8-2d2b-4957-8306-0c0ae571ff13.crt   /DC=IKI/DC=FI/DC=TMO/CN=Leaf Device One/
 
 $ CA revoke sub-ca $certsdir/afcc77c8-2d2b-4957-8306-0c0ae571ff13.crt
 
