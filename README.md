@@ -1,24 +1,30 @@
 # CA tool
 
-This is not a ready project; more like a gist showing how to do certain things
+This is not a ready product but more like a gist showing how to do certain things.
 
 ## Purpose
 
 - Provides user interface for
-  - keypair generation for CA and certificate user
-  - issuing certificates based on requests,
+  - CA keypair generation and self-issuance, 
+  - issuing certificates based on  sigining requests,
   - listing various object, and
   - revocation/CRL generation.
 
 - Keeps track on issues and revoked certificates.
-- Implements secret sharing for CA keys using SSSS if available
+- Implements secret sharing for CA key access using SSSS (Shamir Secret Sharing Scheme) if available
 
-- Requires OpenSSL 3.x
+- Requires OpenSSL 3.x and naturally Python 3.7+
 
 ## Examples
 
-### Install
+### Setup
 
+Packaging
+~~~
+$ make # aka python3 -m build
+~~~
+
+Installing
 ~~~
 $ pip install nanoCA-1.0.0-py3-none-any.whl
 $ alias CA="python -m nanoCA"
