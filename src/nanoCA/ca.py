@@ -26,6 +26,7 @@ keys = "{basepath}/keys"  # CA keys and certs
 
 min_pass_len = 3  # XXX:tmo
 
+
 def make_env(d):
     e = os.environ
     e.update(d)
@@ -435,7 +436,7 @@ def extract_altnames(names: Sequence[str]) -> List[str]:
             if t == 'UPN':
                 if '@' not in v:
                     raise ValueError(f"{t} must contain '@'-sign")
-                t = 'othername'
+                t = 'otherName'
                 v = f"1.3.6.1.4.1.311.20.2.3;UTF8:{v}"
             if t == 'DNS' and '.' not in v:
                 raise ValueError(f"{t} must contain '.'-sign")
@@ -474,9 +475,9 @@ def issue():
               help="Subject altName {DNS,IP,EMAIL,UPN}=value.",
               type=str, multiple=True)
 @click.option('--usage',
-              help="Location of cert on the hierarchy - top, sub, or leaf",
-              type=click.Choice(['TOP', 'SUB', 'LEAF'], case_sensitive=False),
-              default='LEAF')
+              help="Location of cert on the hierarchy - top, sub, or SIG/KEM for leaf",
+              type=click.Choice(['TOP', 'SUB', 'SIG', 'KEM'], case_sensitive=False),
+              default='SIG')
 @click.option("--name",
               help="Mandatory Friendly name for the CA certificate issued. Only used for CA's with local keys.",
               nargs=1, type=str)
@@ -530,10 +531,10 @@ def cmd_issue(obj: Global, *,
             with open(idx_name(obj, name), "a") as f:
                 f.write("")
     else:
-        assert usage == 'LEAF'
+        assert usage in ('SIG', 'KEM')
         assert name is None
 
-        certname = name or str(uuid.uuidv4())
+        certname = name or str(uuid.uuid4())
         validity = str(2 * 365 + 30)
         issue_cmd.extend([
             "-CA", crt_name(obj, issuer),
@@ -571,15 +572,18 @@ def cmd_issue(obj: Global, *,
             extlines.append("subjectKeyIdentifier=hash")
             extlines.append("authorityKeyIdentifier=keyid:always,issuer")
             extlines.append("subjectAltName = @altnames")
-            # specialization; depth of hierarchy is two (ca, sub, leaf)
+            # specialization; depth of hierarchy is two (ca, sub, sig/kem)
             if usage == 'TOP':
                 extlines.append("basicConstraints = critical,CA:true,pathlen:1")
             else:
                 extlines.append("basicConstraints = critical,CA:true,pathlen:0")
         else:
             extlines.append("[ certext ]")
-            extlines.append("keyUsage = digitalSignature")
-            extlines.append("extendedKeyUsage = serverAuth")
+            if usage == 'SIG':
+                extlines.append("keyUsage = digitalSignature")
+                extlines.append("extendedKeyUsage = serverAuth")
+            if usage == 'KEM':
+                extlines.append("keyUsage = keyEncipherment,keyAgreement")
             extlines.append("authorityKeyIdentifier = keyid:always")
             extlines.append("subjectAltName = @altnames")
 
@@ -588,6 +592,7 @@ def cmd_issue(obj: Global, *,
 
         with open(extpath, "w") as extfile:
             extfile.write("\n".join(extlines))
+            extfile.write("\n")
 
         if not obj.dry_run:
             issue = subprocess.Popen(issue_cmd,
