@@ -580,7 +580,7 @@ def cmd_issue(obj: Global, *,
         else:
             extlines.append("[ certext ]")
             if usage == 'SIG':
-                extlines.append("keyUsage = digitalSignature")
+                extlines.append("keyUsage = digitalSignature, nonRepudiation")
                 extlines.append("extendedKeyUsage = serverAuth")
             if usage == 'KEM':
                 extlines.append("keyUsage = keyEncipherment,keyAgreement")
