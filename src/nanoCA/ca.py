@@ -138,7 +138,7 @@ def index_issue(ctx, caname,
             new_index.write(f"V\t{expires}\t{revoked}\t{hex_serial}\t{certfile}\t/{subject}\n")
 
         # done; now atomic update with backups
-        for gen in range(0, 9):
+        for gen in range(0, 10):
             bd = old_idx_name + f".backup-{10-gen}"
             bs = old_idx_name + f".backup-{10-(gen+1)}"
             if os.path.exists(bs):
@@ -153,7 +153,7 @@ def index_find(ctx, caname: str, pattern: str) -> List[str]:
     with open(index_file, "r") as index:
         for line in index.readlines():
             r = line.strip().split('\t')
-            if not re.match(r'', r[4]):
+            if not re.match(pattern or r".*", r[5]):
                 continue
             result.append(r)
     return result
@@ -268,9 +268,14 @@ def cmd_list(obj):
 ##############################################################################
 @click.group()
 def show():
-    click.echo("list")
+    """Show certificates related to ISSUER.
+
+    Optionally a regex PATTERN can be used to filter by subject-name.
+    """
+    click.echo("show")
 
 
+#@click.option("--details/--no-details", default=False, help="show more details from certificate")
 @show.command(name="show")
 @click.argument("issuer", type=str)
 @click.argument("pattern", type=str, required=False)
@@ -505,7 +510,7 @@ def cmd_issue(obj: Global, *,
         certname = issuer
         issue_cmd.extend([
             "-key", key_name(obj, issuer),
-            "-CAcreateserial",
+            "-rand_serial",
             "-extensions", "certext_ca", "-days", validity
         ])
         # touch the index for CA
@@ -523,7 +528,7 @@ def cmd_issue(obj: Global, *,
         issue_cmd.extend([
             "-CA", crt_name(obj, issuer),
             "-CAkey", key_name(obj, issuer),
-            "-CAcreateserial",
+            "-rand_serial",
             "-extensions", "certext_ca", "-days", validity
         ])
         # touch the index for CA
@@ -539,7 +544,7 @@ def cmd_issue(obj: Global, *,
         issue_cmd.extend([
             "-CA", crt_name(obj, issuer),
             "-CAkey", key_name(obj, issuer),
-            "-CAcreateserial",
+            "-rand_serial",
             "-extensions", "certext", "-days", validity
         ])
 

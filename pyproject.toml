@@ -7,6 +7,9 @@ authors = [
 description = "Nano CA with Secret Sharing"
 readme = "README.md"
 requires-python = ">=3.7"
+dependencies = [
+         "click"
+]
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
